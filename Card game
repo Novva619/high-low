@@ -1,0 +1,120 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib> // For srand() and rand()
+#include <ctime>   // For time()
+
+using namespace std;
+
+// Define constants
+const int NUM_CARDS = 13; // Number of cards in a deck
+const int MAX_ROUNDS = 3;  // Maximum number of rounds to play for best 2 out of 3
+
+// Structure to represent a card
+struct Card {
+    int value;
+    char suit;
+};
+
+// Function prototypes
+void displayMenu();
+void startGame();
+void displayRules();
+Card drawCard();
+bool playRound(int& playerScore);
+
+int main() {
+    srand((0)); // Seed the random number generator
+
+    int choice;
+    do {
+        displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                startGame();
+                break;
+            case 2:
+                displayRules();
+                break;
+            case 3:
+                cout << "Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 3);
+
+    return 0;
+}
+
+// Function to display the menu options
+void displayMenu() {
+    cout << "\n=== High-Low Card Game ===\n";
+    cout << "1. Start a new game\n";
+    cout << "2. Display game rules\n";
+    cout << "3. Exit\n";
+}
+
+// Function to start a new game
+void startGame() {
+    int playerScore = 0;
+    int rounds = 0;
+    bool continueGame = true;
+    do {
+        cout << "Starting round " << (rounds + 1) << "...\n";
+        continueGame = playRound(playerScore);
+        rounds++; // Increment rounds played
+        cout << "Player score: " << playerScore << endl;
+    } while (continueGame && rounds < MAX_ROUNDS); // Play until the player chooses to exit or maximum rounds reached
+
+    cout << "Game over.\n";
+}
+
+// Function to display the game rules
+void displayRules() {
+    cout << "\n=== Game Rules ===\n";
+    cout << "1. You will be dealt a random card from the deck.\n";
+    cout << "2. You have to guess whether the next card drawn will be higher or lower.\n";
+    cout << "3. If your guess is correct, you win the round.\n";
+    cout << "4. If your guess is incorrect, you lose the round.\n";
+    cout << "5. The game continues until you choose to exit or reach the maximum rounds.\n";
+}
+
+// Function to draw a random card from the deck (returns a Card struct)
+Card drawCard() {
+    Card card;
+    card.value = rand() % NUM_CARDS + 1; // Random value between 1 and NUM_CARDS
+    card.suit = 'H'; // For simplicity, we'll use 'H' for all suits (hearts)
+    return card;
+}
+
+// Function to play a round of the game (returns true if the game should continue, false otherwise)
+bool playRound(int& playerScore) {
+    // Draw the current card
+    Card currentCard = drawCard();
+    cout << "Current card: " << currentCard.value << endl;
+
+    // Ask the player to guess
+    char guess;
+    cout << "Will the next card be (h)igher or (l)ower? ";
+    cin >> guess;
+
+    // Draw the next card
+    Card nextCard = drawCard();
+
+    // Display the next card
+    cout << "Next card: " << nextCard.value << endl;
+
+    // Determine if the player's guess is correct
+    if ((guess == 'h' && nextCard.value > currentCard.value) || (guess == 'l' && nextCard.value < currentCard.value)) {
+        cout << "Congratulations! Your guess is correct.\n";
+        playerScore++; // Increment player score
+        return true; // Continue the game
+    } else {
+        cout << "Sorry, your guess is incorrect.\n";
+        return false; // End the game
+    }
+}
+
